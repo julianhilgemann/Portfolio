@@ -1,0 +1,8 @@
+
+financial_twin:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '/Users/admin/Desktop/Portfolio/financial_model.duckdb'
+      threads: 4

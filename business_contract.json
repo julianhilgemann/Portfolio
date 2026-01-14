@@ -1,0 +1,225 @@
+{
+    "meta": [
+        {
+            "Column": "scenario",
+            "Example": "base",
+            "Notes": "base / upside / downside"
+        },
+        {
+            "Column": "seed",
+            "Example": 1,
+            "Notes": "RNG seed"
+        },
+        {
+            "Column": "currency",
+            "Example": "EUR",
+            "Notes": "informational"
+        },
+        {
+            "Column": "fiscal_year_start",
+            "Example": "2024-01-01T00:00:00",
+            "Notes": "ISO date"
+        },
+        {
+            "Column": "fiscal_year_end",
+            "Example": "2028-12-31T00:00:00",
+            "Notes": "ISO date"
+        },
+        {
+            "Column": "generator_version",
+            "Example": "v0.1",
+            "Notes": "optional"
+        },
+        {
+            "Column": "notes",
+            "Example": "base case assumptions",
+            "Notes": "optional"
+        }
+    ],
+    "operating_plan": {
+        "2024": {
+            "fiscal_year": 2024,
+            "regime": 1.0,
+            "customers_end": 30.0,
+            "revenue_target": 150000.0,
+            "gross_margin": 0.7,
+            "opex_fixed": 117500.0,
+            "marketing_spend": 45000.0,
+            "ev_multiple": 4.0,
+            "arpu": 416.6666666666667
+        },
+        "2025": {
+            "fiscal_year": 2025,
+            "regime": 1.0,
+            "customers_end": 31.5,
+            "revenue_target": 157500.0,
+            "gross_margin": 0.7,
+            "opex_fixed": 120875.0,
+            "marketing_spend": 47250.0,
+            "ev_multiple": 4.0,
+            "arpu": 426.8292682926829
+        },
+        "2026": {
+            "fiscal_year": 2026,
+            "regime": 2.0,
+            "customers_end": 50.4,
+            "revenue_target": 866880.0,
+            "gross_margin": 0.85,
+            "opex_fixed": 800160.0,
+            "marketing_spend": 433440.0,
+            "ev_multiple": 10.0,
+            "arpu": 1764.1025641025642
+        },
+        "2027": {
+            "fiscal_year": 2027,
+            "regime": 2.0,
+            "customers_end": 80.64,
+            "revenue_target": 1387008.0,
+            "gross_margin": 0.85,
+            "opex_fixed": 1190256.0,
+            "marketing_spend": 693504.0,
+            "ev_multiple": 10.0,
+            "arpu": 1764.1025641025642
+        },
+        "2028": {
+            "fiscal_year": 2028,
+            "regime": 2.0,
+            "customers_end": 129.024,
+            "revenue_target": 2219212.8,
+            "gross_margin": 0.85,
+            "opex_fixed": 1814409.5999999999,
+            "marketing_spend": 1109606.4,
+            "ev_multiple": 10.0,
+            "arpu": 1764.1025641025642
+        }
+    },
+    "exp_noise": [
+        {
+            "metric": "new_customers",
+            "sigma": 0.1,
+            "rho": 0.6,
+            "distribution": "lognormal"
+        },
+        {
+            "metric": "marketing_spend",
+            "sigma": 0.08,
+            "rho": 0.5,
+            "distribution": "lognormal"
+        },
+        {
+            "metric": "arpu",
+            "sigma": 0.05,
+            "rho": 0.3,
+            "distribution": "normal"
+        },
+        {
+            "metric": "revenue",
+            "sigma": 0.08,
+            "rho": 0.6,
+            "distribution": "lognormal"
+        }
+    ],
+    "exp_churn": [
+        {
+            "segment": "SMB",
+            "base_multiplier": 1.2,
+            "tenure_decay_beta": 0.12
+        },
+        {
+            "segment": "Mid",
+            "base_multiplier": 1.0,
+            "tenure_decay_beta": 0.1
+        },
+        {
+            "segment": "Enterprise",
+            "base_multiplier": 0.7,
+            "tenure_decay_beta": 0.08
+        }
+    ],
+    "exp_mix": [
+        {
+            "plan_id": "basic",
+            "plan_name": "Basic",
+            "share": 0.7,
+            "arpu_multiplier": 1.0
+        },
+        {
+            "plan_id": "pro",
+            "plan_name": "Pro",
+            "share": 0.3,
+            "arpu_multiplier": 1.8
+        }
+    ],
+    "exp_channel": [
+        {
+            "channel_id": "paid_search",
+            "channel_name": "Paid Search",
+            "base_share": 0.45
+        },
+        {
+            "channel_id": "paid_social",
+            "channel_name": "Paid Social",
+            "base_share": 0.25
+        },
+        {
+            "channel_id": "organic",
+            "channel_name": "Organic",
+            "base_share": 0.2
+        },
+        {
+            "channel_id": "partner",
+            "channel_name": "Partner",
+            "base_share": 0.1
+        }
+    ],
+    "export_seas": [
+        {
+            "month": 1,
+            "seasonality_weight": 0.9
+        },
+        {
+            "month": 2,
+            "seasonality_weight": 0.85
+        },
+        {
+            "month": 3,
+            "seasonality_weight": 0.95
+        },
+        {
+            "month": 4,
+            "seasonality_weight": 1.0
+        },
+        {
+            "month": 5,
+            "seasonality_weight": 1.05
+        },
+        {
+            "month": 6,
+            "seasonality_weight": 1.1
+        },
+        {
+            "month": 7,
+            "seasonality_weight": 1.05
+        },
+        {
+            "month": 8,
+            "seasonality_weight": 1.0
+        },
+        {
+            "month": 9,
+            "seasonality_weight": 0.95
+        },
+        {
+            "month": 10,
+            "seasonality_weight": 1.0
+        },
+        {
+            "month": 11,
+            "seasonality_weight": 1.1
+        },
+        {
+            "month": 12,
+            "seasonality_weight": 1.15
+        }
+    ]
+}

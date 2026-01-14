@@ -1,0 +1,12 @@
+
+version: 2
+
+sources:
+  - name: duckdb_local
+    schema: main
+    tables:
+      - name: raw_customers
+      - name: raw_subscriptions
+      - name: fct_budget_monthly 
+      - name: dim_calendar
+      - name: raw_forecast
