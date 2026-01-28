@@ -26,13 +26,12 @@ This repository was built using a highly structured **Agent-Assisted** methodolo
 ## 🏗 Architecture
 A modern, self-contained data stack running locally:
 
-flowchart LR
-    Contract["📄 Excel Contract"] -->|Param Extraction| Engine["⚙️ Stochastic Engine"]
-    Engine -->|Raw Data| DWH[("🦆 DuckDB (Bronze)")]
-    DWH -->|dbt| Models["Transformation (Silver/Gold)"]
-    Models -->|Prophet| ML["📈 Forecast Agent"]
-    ML -.->|Feedback Loop| DWH
-    Models -->|Streamlit| BI["📊 Executive Dashboard"]
+![System Architecture](docs/assets/architecture_v2.png)
+
+## ⚙️ Generator Dynamics
+The simulation engine relies on the following stochastic distributions to model real-world variance:
+
+![Generator Distributions](docs/assets/generator_distributions.png)
 
 ## ⚡️ Key Features
 -   **Contract-First Engineering**: The entire simulation scales dynamically based on `business_contract.json` extracted from the Excel Operating Plan.
@@ -40,6 +39,82 @@ flowchart LR
 -   **Medallion DWH**: A rigorous `dbt` project structure (Bronze/Silver/Gold) ensuring clean lineage and correct MRR calculations.
 -   **Regime-Aware Forecasting**: A `Prophet` model that detects "Growth Regimes" to avoid overfitting on early-stage data.
 -   **Three-Pronged BI**: Visualizes the **Plan** (BUD), the **Reality** (ACT), and the **Trend** (FCT) in one unified dashboard.
+
+## 🗄️ Data Warehouse Structure
+
+### Entity Relationship Diagram (ERD)
+The core schema centers on the **Subscription** entity, which captures the lifecycle of revenue generation.
+
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ SUBSCRIPTIONS : "has"
+    CUSTOMERS {
+        int customer_id PK
+        string segment
+        date acquisition_date
+    }
+    SUBSCRIPTIONS {
+        string subscription_id PK
+        int customer_id FK
+        decimal mrr
+        date start_date
+        date end_date
+    }
+    BUDGET_MONTHLY {
+        date month_end
+        decimal budget_mrr
+        int budget_customers
+    }
+```
+
+### dbt Lineage & Information Flow
+Data flows from the Stochastic Engine into the Bronze Layer, transforms into Monthly Recurring Revenue (MRR) ledgers in Silver, and aggregates for Reporting/ML usage in Gold. The Forecast Agent consumes Gold data and writes back predictions to complete the loop.
+
+```mermaid
+graph TD
+    classDef source fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef silver fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef gold fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef ml fill:#e0f2f1,stroke:#004d40,stroke-width:2px,stroke-dasharray: 5 5;
+
+    subgraph Sources [Bronze / Raw]
+        RC[raw_customers]:::source
+        RS[raw_subscriptions]:::source
+        BM[fct_budget_monthly]:::source
+        DC[dim_calendar]:::source
+        RF[raw_forecast]:::source
+    end
+
+    subgraph Silver [Transformation]
+        ISM[int_subscription_months]:::silver
+        SB[stg_budget]:::silver
+    end
+
+    subgraph Gold [Marts]
+        MFM[mart_finance_monthly]:::gold
+        MFI[mart_forecast_input]:::gold
+        MCR[mart_consolidated_reporting]:::gold
+    end
+    
+    subgraph Agent [ML Agent]
+        PY[Forecast Engine]:::ml
+    end
+
+    RC --> ISM
+    RS --> ISM
+    DC --> ISM
+    BM --> SB
+    
+    ISM --> MFM
+    SB --> MFM
+    
+    MFM --> MFI
+    MFI --> PY
+    PY -->|Writes Back| RF
+    
+    MFM --> MCR
+    RF --> MCR
+```
 
 ## 🛠 Tech Stack
 -   **Code**: Python 3.11
