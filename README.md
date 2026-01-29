@@ -28,7 +28,52 @@ This repository was built using a highly structured **Agent-Assisted** methodolo
 ## 🏗 Architecture
 A modern, self-contained data stack running locally:
 
-![System Architecture](docs/assets/architecture_v2.png)
+```mermaid
+flowchart TB
+
+%% ---------- HUMAN LAYER ----------
+subgraph Human_in_the_Loop
+H1["Human: Architecture & Specs"]
+H2["Human: Financial Modeling (Excel Contract)"]
+H3["Human: Validate Transformations"]
+H4["Human: Validate Forecasts & Dashboard"]
+end
+
+%% ---------- AGENTIC BUILD / ORCHESTRATION ----------
+subgraph Agentic_Workload_Automation
+IDE["Agentic IDE: Google Antigravity"]
+end
+
+%% ---------- INPUT ----------
+Contract["Excel Financial Model / Business Contract"]
+
+%% ---------- DATA + ML + BI ----------
+Engine["Stochastic Simulation Engine"]
+DWH[("DuckDB – Bronze Layer")]
+Models["dbt Transformations – Silver/Gold"]
+ML["Forecast Agent (Prophet)"]
+BI["Executive Dashboard (Streamlit)"]
+
+%% ---------- FLOWS ----------
+H1 --> IDE
+H2 --> Contract
+
+IDE --> Engine
+IDE --> Models
+IDE --> ML
+IDE --> BI
+
+Contract -->|Param Extraction| Engine
+Engine -->|Raw Data| DWH
+DWH -->|dbt| Models
+Models -->|FCT| ML
+Models -->|Consumption| BI
+ML -.->|Feedback Loop| DWH
+
+H3 --> Models
+H4 --> ML
+H4 --> BI
+```
 
 ## 📊 Financial Model Foundation
 At the heart of the system is the **Business Contract**—a structured extraction of the Excel Operating Plan. This serves as the single source of truth, defining the assumptions (churn, growth, pricing) and the targets that the Stochastic Engine must simulate against.
