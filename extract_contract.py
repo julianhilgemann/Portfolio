@@ -23,9 +23,8 @@ def extract_contract():
         print("WARNING: EXPORT_META not found")
 
     
-    # 2. Extract Operating Plan from 02_Model (Primary) or EXPORT_OP (Fallback)
-    # The prompt requested EXPORT_OP, but it only contains 1 year of data.
-    # We will use 02_Model for the full multi-year plan.
+    # 2. Extract Operating Plan from 02_Model (Primary)
+    # Using 02_Model as it contains the full multi-year plan (unlike EXPORT_OP).
     if '02_Model' in xls.sheet_names:
         print("Using 02_Model for Operating Plan extraction...")
         df_model = pd.read_excel(xls, '02_Model', header=None)
@@ -45,8 +44,7 @@ def extract_contract():
             
             op_dict = {y: {'fiscal_year': y} for y in years}
             
-            # Map metrics
-            # We scan rows for the metric name in column 0
+            # Map metrics by scanning column 0
             metric_map = {
                 'Customer Count': 'customers_end',
                 'Total Revenue': 'revenue_target',
@@ -67,14 +65,12 @@ def extract_contract():
                         if pd.notnull(val):
                             op_dict[y][key] = val
                             
-            # Calculate ARPU (Revenue / Avg Customers / 12) * 1000 (since units in kEUR)
-            
-            # Helper to get start count
+            # Calculate ARPU (Revenue / Avg Customers / 12) * 1000 (units in kEUR)
             def get_start_count(y, op_dict):
                 py = y - 1
                 if py in op_dict:
                      return op_dict[py]['customers_end']
-                # For 2024, assume Start = End (Stable Base) to avoid ARPU spike
+                # Assume stable base for 2024 start
                 if y == 2024:
                     return op_dict[y]['customers_end']
                 return 0
@@ -101,10 +97,7 @@ def extract_contract():
         pass 
         
     # Standardize scaling
-    # Items from 02_Model:
-    # Revenue, OpEx, S&M are in kEUR likely (based on prompt).
-    # Customer Count, Multiple, Regime are distinct.
-    # I should scale financial items.
+    # Convert kEUR to EUR for financial items
     if 'operating_plan' in contract:
         for year, data in contract['operating_plan'].items():
             for k, v in data.items():
@@ -125,17 +118,16 @@ def extract_contract():
     # 4. Regime Switch from Assumptions
     if 'Assumptions' in xls.sheet_names:
         df_assumptions = pd.read_excel(xls, 'Assumptions', header=None)
-        # Naive search for "Regime Switch" or similar
+        # Search for "Regime Switch" or "Transition Year" in Assumptions sheet
         regime_year = None
         for i, row in df_assumptions.iterrows():
             row_str = row.astype(str).tolist()
             for cell in row_str:
                 if 'Regime Switch' in cell or 'Transition Year' in cell:
-                    # Look for a year (int) in the row
                     for sub_cell in row_str:
                         try:
                             val = float(sub_cell)
-                            if 2020 < val < 2040: # Reasonable year range
+                            if 2020 < val < 2040: 
                                 regime_year = int(val)
                                 break
                         except:

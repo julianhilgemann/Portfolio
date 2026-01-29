@@ -39,14 +39,9 @@ def run_transformations():
     op = contract['operating_plan']
     for year_str, metrics in op.items():
         year = int(year_str)
-        # simplistic: spread yearly targets / 12 for budget tracking if needed
-        # Or just carry the yearly target labels.
-        # User wants "fct_budget_monthly table is populated directly from the business_contract.json yearly values"
-        # Presumably repeated for each month or divided?
-        # Revenue Target is Annual. Monthly budget = Annual / 12?
-        # Customers End is Year End. Monthly budget implies interpolation or just repeating the year-end goal?
-        # Usually linear interpolation for customers.
-        # I'll do: Revenue/12. Customers linear interp from previous year end.
+        # Linearly interpolate annual targets to monthly budget
+        # Revenue is Annual, so divide by 12.
+        # Customers End is Year End, so interpolate growth from previous year end.
         
         # We need previous year end for interp.
         prev_year_end = 0
@@ -74,12 +69,8 @@ def run_transformations():
     df_budget = pd.DataFrame(budget_rows)
     con.execute("CREATE OR REPLACE TABLE fct_budget_monthly AS SELECT * FROM df_budget")
 
-    print("Building fct_subscription_snapshot_monthly...")
-    # Cross join calendar months with subscriptions to determine status
-    # We only care about Month Ends.
-    # Logic: For each month_end in 2024-2028:
-    #   Find subs where start_date <= month_end AND (end_date IS NULL OR end_date > month_end)
-    #   Sum MRR
+    # Create Snapshots: Cross join calendar months with subscriptions
+    # Filter for subscriptions active at month_end
     
     # Efficient SQL approach
     sql = """
@@ -114,9 +105,7 @@ def run_transformations():
     con.execute(f"CREATE OR REPLACE TABLE fct_subscription_snapshot_monthly AS {sql}")
     
     print("Building fct_valuation_monthly...")
-    # Join ACT (snapshot) and BUD (budget) to calculate valuation
-    # We want Valuation for ACT? "Apply ev_multiple from contract to the ARR"
-    # The ev_multiple is in fct_budget_monthly (derived from contract).
+    # Combine ACT and BUD data, applying EV multiple from budget (contract) to ARR
     
     sql_val = """
     SELECT 

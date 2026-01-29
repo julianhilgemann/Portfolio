@@ -41,12 +41,8 @@ def run_forecast():
         print(f"Cross-Validation MAPE (2026 Test): {mape:.2%}")
 
     # 3. Train Full Model
-    # Important: The dataset has a Regime Switch. Training on early years (low growth) 
-    # and predicting late years (high growth) causes issues if changepoints aren't perfect.
-    # Strategy: Train on the most recent "stable" high-growth period (e.g., from 2025 onwards).
-    
-    # Strategy: Train on the most recent "stable" high-growth period.
-    # If 2026 is the Regime Switch year, training on 2026 only captures the new trajectory.
+    # Train on the high-growth regime (post-2025) to accurately capture the new trajectory.
+    # Training across the changepoint with limited history may underfit the new trend.
     
     print("Training Forecast Model on 2026 High-Growth Regime...")
     training_data = df[df['ds'] >= '2026-01-01'].copy()
@@ -71,12 +67,8 @@ def run_forecast():
     print(fct[['ds', 'yhat']].head())
     
     # Write to DuckDB
-    # We match schema of mart_finance_monthly?
-    # mart_finance_monthly: month_end, scenario, scenario_id, customers, mrr, arr
-    # We predicted 'y' which is MRR (from mart_forecast_input).
-    # We need to estimate customers? Or just NULL for now?
-    # User said "FCT figures".
-    # I'll populate MRR/ARR.
+    # Match schema of fct tables (Scenario, Customers, MRR, ARR)
+    # Use placeholder for Customers as we only forecast MRR ('y')
     
     fct_rows = []
     for _, row in fct.iterrows():
