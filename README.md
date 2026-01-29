@@ -6,6 +6,8 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 ![Prophet](https://img.shields.io/badge/Prophet-ML-0057B8?style=for-the-badge&logo=meta&logoColor=white)
+![Antigravity](https://img.shields.io/badge/Antigravity-IDE-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Gemini 3 Pro](https://img.shields.io/badge/Gemini_3_Pro-LLM-8E44AD?style=for-the-badge&logo=google&logoColor=white)
 
 > **Building a commercial-grade Financial Data Platform in hours, not weeks, using Agentic Workflow.**
 
@@ -18,6 +20,24 @@ By treating the "Business Contract" (Excel Model) as code, we compile strategy i
 
 ## 🤖 The Agentic Workflow
 This repository was built using a highly structured **Agent-Assisted** methodology, maximizing the "Context Window" efficiency of LLMs to go from Idea to Execution rapidly.
+
+```mermaid
+flowchart TD
+    %% Nodes
+    S1[1. Brainstorming<br>ChatGPT]
+    S2[2. Context Storage<br>Obsidian Vault .md]
+    S3[3. Refinement<br>NotebookLM]
+    S4[4. Spec Extraction<br>RAG Specsheet]
+    S5[5. Execution<br>Antigravity on Gemini 3 Pro]
+    S6[6. Human In The Loop<br>Sanity Checks]
+
+    %% Flow
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 <-->|Nudging| S6
+```
 
 1.  **Ideation & Alignment**: Brainstorming with **ChatGPT** until the specific "Financial Digital Twin" concept was locked.
 2.  **Context Storage**: Structuring the domain knowledge into Markdown modules within an **Obsidian Vault**.
@@ -81,7 +101,22 @@ At the heart of the system is the **Business Contract**—a structured extractio
 ![Financial Model Foundation](docs/assets/financial_model_foundation.png)
 
 ## ⚙️ Generator Dynamics
-The simulation engine relies on the following stochastic distributions to model real-world variance:
+The simulation engine acts as a compiler, translating the high-level signals from the **Business Contract** (Excel) into granular, transaction-level data points. It uses specific stochastic distributions to model the messiness of real-world operations:
+
+### 1. Customer Acquisition (Poisson + AR(1) Process)
+- **Source**: `02_Model` (Annual Customer Targets) & `EXP_NOISE` (Volatility Parameters)
+- **Logic**: The engine calculates a "Monthly Growth Envelope" required to meet the annual Year-End targets.
+- **Stochasticity**: It doesn't just divide by 12. It applies **AR(1) Noise** (Autoregressive) to force "Market Momentum" (hot and cold streaks) and uses a **Poisson Process** to simulate the random arrival of deals on specific days.
+
+### 2. Pricing & Deal Size (Lognormal Distribution)
+- **Source**: `02_Model` (Revenue Targets $\to$ Implied ARPU)
+- **Logic**: B2B contract values are rarely normally distributed. We use a **Lognormal Distribution** centered on the Plan's ARPU.
+- **Effect**: This creates a realistic "Long Tail" distribution—generating many standard SMB deals and the occasional "Whale" (Enterprise contract) that skews the average, matching real SaaS dynamics.
+
+### 3. Retention Dynamics (Hazard/Survival Functions)
+- **Source**: `EXP_CHURN` (Segment-specific Decay Curves)
+- **Logic**: Flat monthly churn rates (e.g., "1.5% per month") are inaccurate. The engine checks for churn daily using a **Tenure-Decay Hazard Function** ($P(Churn) \propto t^{-\beta}$).
+- **Effect**: Simulates the "Happy Path"—customers who survive the first 3 months become significantly 'stickier' over time.
 
 ![Generator Distributions](docs/assets/generator_distributions.png)
 
