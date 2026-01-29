@@ -79,10 +79,10 @@ Data flows from the Stochastic Engine into the Bronze Layer, transforms into Mon
 
 ```mermaid
 graph TD
-    classDef source fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef silver fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
-    classDef gold fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef ml fill:#e0f2f1,stroke:#004d40,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef source fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:black;
+    classDef silver fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:black;
+    classDef gold fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:black;
+    classDef ml fill:#e0f2f1,stroke:#004d40,stroke-width:2px,stroke-dasharray: 5 5,color:black;
 
     subgraph Sources [Bronze / Raw]
         RC[raw_customers]:::source
@@ -122,6 +122,25 @@ graph TD
     MFM --> MCR
     RF --> MCR
 ```
+
+## 🔮 Forecasting Mechanism
+
+To project future revenue trajectories, the system employs **Facebook Prophet**, a distinct additive regression model best suited for business time series with strong seasonal effects.
+
+![Forecasting Mechanism](docs/assets/forecast_mechanism.png)
+
+### Key Components
+
+1.  **Regime Detection**: The model deliberately isolates the most recent "High Growth" regime (post-2025) to avoid under-predicting based on early-stage volatility.
+2.  **Additive Seasonality**: Captures recurring annual patterns (e.g., Q4 budget flushes).
+3.  **Holiday Effects**: Accounts for US-specific holiday dips in commercial activity.
+4.  **Uncertainty Intervals**: Projections include upper/lower bounds to model best/worst-case scenarios for cash flow planning.
+
+## 🖥️ Final Dashboard
+
+The system consolidates ACT (Actuals), BUD (Budget), and FCT (Forecast) into a unified executive view:
+
+![Dashboard](docs/assets/dashboard_screenshot.png)
 
 ## 🛠 Tech Stack
 -   **Code**: Python 3.11
