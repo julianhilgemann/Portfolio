@@ -10,6 +10,8 @@
 > **Building a commercial-grade Financial Data Platform in hours, not weeks, using Agentic Workflow.**
 
 ## 📖 About
+![High Level Architecture](docs/assets/high_level_architecture.png)
+
 This project is a Proof of Concept (POC) for a **"Rapid Data Function"**—instantiating an entire end-to-end data stack (Stochastic Simulation, Data Warehouse, Algorithmic Forecasting, and BI) purely from a static business definition.
 
 By treating the "Business Contract" (Excel Model) as code, we compile strategy into a living **Financial Digital Twin** that simulates daily operations, scales data engineering via dbt, and performs autonomous forecasting.
@@ -27,6 +29,11 @@ This repository was built using a highly structured **Agent-Assisted** methodolo
 A modern, self-contained data stack running locally:
 
 ![System Architecture](docs/assets/architecture_v2.png)
+
+## 📊 Financial Model Foundation
+At the heart of the system is the **Business Contract**—a structured extraction of the Excel Operating Plan. This serves as the single source of truth, defining the assumptions (churn, growth, pricing) and the targets that the Stochastic Engine must simulate against.
+
+![Financial Model Foundation](docs/assets/financial_model_foundation.png)
 
 ## ⚙️ Generator Dynamics
 The simulation engine relies on the following stochastic distributions to model real-world variance:
